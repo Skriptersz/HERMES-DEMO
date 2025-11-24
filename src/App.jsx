@@ -9,37 +9,68 @@ const countryCodes = [
   { code: '+973', country: 'Bahrain', iso: 'bh' },
   { code: '+968', country: 'Oman', iso: 'om' },
   { code: '+965', country: 'Kuwait', iso: 'kw' },
-  { code: '+1', country: 'USA', iso: 'us' },
-  { code: '+44', country: 'UK', iso: 'gb' },
-  { code: '+91', country: 'India', iso: 'in' },
-  { code: '+92', country: 'Pakistan', iso: 'pk' },
-  { code: '+63', country: 'Philippines', iso: 'ph' },
-  { code: '+20', country: 'Egypt', iso: 'eg' },
   { code: '+962', country: 'Jordan', iso: 'jo' },
   { code: '+961', country: 'Lebanon', iso: 'lb' },
+  { code: '+20', country: 'Egypt', iso: 'eg' },
+  { code: '+212', country: 'Morocco', iso: 'ma' },
+  { code: '+216', country: 'Tunisia', iso: 'tn' },
+  { code: '+1', country: 'USA', iso: 'us' },
+  { code: '+1', country: 'Canada', iso: 'ca' },
+  { code: '+44', country: 'UK', iso: 'gb' },
+  { code: '+353', country: 'Ireland', iso: 'ie' },
   { code: '+33', country: 'France', iso: 'fr' },
   { code: '+49', country: 'Germany', iso: 'de' },
   { code: '+39', country: 'Italy', iso: 'it' },
+  { code: '+34', country: 'Spain', iso: 'es' },
+  { code: '+351', country: 'Portugal', iso: 'pt' },
+  { code: '+31', country: 'Netherlands', iso: 'nl' },
+  { code: '+32', country: 'Belgium', iso: 'be' },
+  { code: '+41', country: 'Switzerland', iso: 'ch' },
+  { code: '+43', country: 'Austria', iso: 'at' },
+  { code: '+46', country: 'Sweden', iso: 'se' },
+  { code: '+47', country: 'Norway', iso: 'no' },
+  { code: '+45', country: 'Denmark', iso: 'dk' },
+  { code: '+358', country: 'Finland', iso: 'fi' },
+  { code: '+48', country: 'Poland', iso: 'pl' },
+  { code: '+420', country: 'Czech Republic', iso: 'cz' },
+  { code: '+30', country: 'Greece', iso: 'gr' },
+  { code: '+90', country: 'Turkey', iso: 'tr' },
   { code: '+7', country: 'Russia', iso: 'ru' },
+  { code: '+380', country: 'Ukraine', iso: 'ua' },
+  { code: '+91', country: 'India', iso: 'in' },
+  { code: '+92', country: 'Pakistan', iso: 'pk' },
+  { code: '+880', country: 'Bangladesh', iso: 'bd' },
+  { code: '+94', country: 'Sri Lanka', iso: 'lk' },
+  { code: '+977', country: 'Nepal', iso: 'np' },
   { code: '+86', country: 'China', iso: 'cn' },
+  { code: '+852', country: 'Hong Kong', iso: 'hk' },
   { code: '+81', country: 'Japan', iso: 'jp' },
   { code: '+82', country: 'South Korea', iso: 'kr' },
   { code: '+65', country: 'Singapore', iso: 'sg' },
-  { code: '+61', country: 'Australia', iso: 'au' },
-  { code: '+27', country: 'South Africa', iso: 'za' },
-  { code: '+55', country: 'Brazil', iso: 'br' },
-  { code: '+34', country: 'Spain', iso: 'es' },
-  { code: '+31', country: 'Netherlands', iso: 'nl' },
-  { code: '+41', country: 'Switzerland', iso: 'ch' },
-  { code: '+90', country: 'Turkey', iso: 'tr' },
   { code: '+60', country: 'Malaysia', iso: 'my' },
+  { code: '+66', country: 'Thailand', iso: 'th' },
+  { code: '+84', country: 'Vietnam', iso: 'vn' },
+  { code: '+62', country: 'Indonesia', iso: 'id' },
+  { code: '+63', country: 'Philippines', iso: 'ph' },
+  { code: '+61', country: 'Australia', iso: 'au' },
+  { code: '+64', country: 'New Zealand', iso: 'nz' },
+  { code: '+27', country: 'South Africa', iso: 'za' },
+  { code: '+234', country: 'Nigeria', iso: 'ng' },
+  { code: '+254', country: 'Kenya', iso: 'ke' },
+  { code: '+55', country: 'Brazil', iso: 'br' },
+  { code: '+52', country: 'Mexico', iso: 'mx' },
+  { code: '+54', country: 'Argentina', iso: 'ar' },
+  { code: '+57', country: 'Colombia', iso: 'co' },
+  { code: '+56', country: 'Chile', iso: 'cl' },
 ];
 
 const getFlagUrl = (iso) => `https://flagcdn.com/24x18/${iso}.png`;
 
 function CountryCodeSelect({ value, onChange }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const dropdownRef = useRef(null);
+  const triggerRef = useRef(null);
   const selected = countryCodes.find(c => c.code === value) || countryCodes[0];
 
   useEffect(() => {
@@ -52,12 +83,24 @@ function CountryCodeSelect({ value, onChange }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleToggle = () => {
+    if (!isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setMenuPosition({
+        top: rect.bottom + 4,
+        left: rect.left,
+      });
+    }
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div className="country-dropdown" ref={dropdownRef}>
       <button
+        ref={triggerRef}
         type="button"
         className="country-dropdown-trigger"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
       >
         <img
           src={getFlagUrl(selected.iso)}
@@ -77,12 +120,19 @@ function CountryCodeSelect({ value, onChange }) {
       </button>
 
       {isOpen && (
-        <div className="country-dropdown-menu">
-          {countryCodes.map((country) => (
+        <div
+          className="country-dropdown-menu"
+          style={{
+            position: 'fixed',
+            top: menuPosition.top,
+            left: menuPosition.left,
+          }}
+        >
+          {countryCodes.map((country, index) => (
             <button
-              key={country.code}
+              key={`${country.iso}-${index}`}
               type="button"
-              className={`country-option ${country.code === value ? 'selected' : ''}`}
+              className={`country-option ${country.code === value && country.iso === selected.iso ? 'selected' : ''}`}
               onClick={() => {
                 onChange(country.code);
                 setIsOpen(false);
