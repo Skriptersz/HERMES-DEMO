@@ -42,12 +42,12 @@ textarea {
 }
 
 a {
-  color: #d4af37;
+  color: #c41e3a;
   text-decoration: none;
 }
 
 a:hover {
-  color: #f2d06b;
+  color: #e63946;
 }
 
 /* Custom scrollbar */
@@ -60,10 +60,10 @@ a:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 55, 0.3);
+  background: rgba(196, 30, 58, 0.3);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 175, 55, 0.5);
+  background: rgba(196, 30, 58, 0.5);
 }

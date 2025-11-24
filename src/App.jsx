@@ -73,8 +73,8 @@ function App() {
         <div className="header-section">
           <div className="logo-container">
             <img
-              src="https://i.postimg.cc/wTLJBZKV/image-removebg-preview-(6).png"
-              alt="REM Dubai"
+              src="https://d3ub3p1ffv8f0a.cloudfront.net/wp-content/uploads/2023/01/hermes-logo-original.webp"
+              alt="Hermes Real Estate"
               className="logo"
             />
           </div>
@@ -91,7 +91,7 @@ function App() {
           >
             <Step>
               <div className="step-content">
-                <h2 className="step-title">Welcome to REM Dubai</h2>
+                <h2 className="step-title">Welcome to Hermes Real Estate</h2>
                 <p className="step-description">
                   Let us help you find the perfect property in Dubai. Our exclusive portfolio features
                   premium properties in the most sought-after locations.
