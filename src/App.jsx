@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Stepper, { Step } from './components/Stepper';
 import './App.css';
 
@@ -68,20 +69,36 @@ const getFlagUrl = (iso) => `https://flagcdn.com/24x18/${iso}.png`;
 
 function CountryCodeSelect({ value, onChange }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState('');
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
-  const dropdownRef = useRef(null);
   const triggerRef = useRef(null);
+  const menuRef = useRef(null);
+  const searchRef = useRef(null);
   const selected = countryCodes.find(c => c.code === value) || countryCodes[0];
+
+  const filteredCountries = countryCodes.filter(c =>
+    c.country.toLowerCase().includes(search.toLowerCase()) ||
+    c.code.includes(search)
+  );
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      const clickedTrigger = triggerRef.current?.contains(event.target);
+      const clickedMenu = menuRef.current?.contains(event.target);
+      if (!clickedTrigger && !clickedMenu) {
         setIsOpen(false);
+        setSearch('');
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (isOpen && searchRef.current) {
+      searchRef.current.focus();
+    }
+  }, [isOpen]);
 
   const handleToggle = () => {
     if (!isOpen && triggerRef.current) {
@@ -92,10 +109,17 @@ function CountryCodeSelect({ value, onChange }) {
       });
     }
     setIsOpen(!isOpen);
+    if (isOpen) setSearch('');
+  };
+
+  const handleSelect = (country) => {
+    onChange(country.code);
+    setIsOpen(false);
+    setSearch('');
   };
 
   return (
-    <div className="country-dropdown" ref={dropdownRef}>
+    <div className="country-dropdown">
       <button
         ref={triggerRef}
         type="button"
@@ -119,8 +143,9 @@ function CountryCodeSelect({ value, onChange }) {
         </svg>
       </button>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div
+          ref={menuRef}
           className="country-dropdown-menu"
           style={{
             position: 'fixed',
@@ -128,26 +153,39 @@ function CountryCodeSelect({ value, onChange }) {
             left: menuPosition.left,
           }}
         >
-          {countryCodes.map((country, index) => (
-            <button
-              key={`${country.iso}-${index}`}
-              type="button"
-              className={`country-option ${country.code === value && country.iso === selected.iso ? 'selected' : ''}`}
-              onClick={() => {
-                onChange(country.code);
-                setIsOpen(false);
-              }}
-            >
-              <img
-                src={getFlagUrl(country.iso)}
-                alt={country.country}
-                className="flag-icon"
-              />
-              <span className="country-name">{country.country}</span>
-              <span className="country-code">{country.code}</span>
-            </button>
-          ))}
-        </div>
+          <div className="country-search-wrapper">
+            <input
+              ref={searchRef}
+              type="text"
+              className="country-search"
+              placeholder="Search country..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="country-list">
+            {filteredCountries.map((country, index) => (
+              <button
+                key={`${country.iso}-${index}`}
+                type="button"
+                className={`country-option ${country.code === value && country.iso === selected.iso ? 'selected' : ''}`}
+                onClick={() => handleSelect(country)}
+              >
+                <img
+                  src={getFlagUrl(country.iso)}
+                  alt={country.country}
+                  className="flag-icon"
+                />
+                <span className="country-name">{country.country}</span>
+                <span className="country-code">{country.code}</span>
+              </button>
+            ))}
+            {filteredCountries.length === 0 && (
+              <div className="country-no-results">No countries found</div>
+            )}
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
