@@ -200,10 +200,11 @@
   display: flex;
   gap: 0;
   border-radius: 0.5rem;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid rgba(196, 30, 58, 0.2);
   background: rgba(20, 20, 20, 0.5);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
 .phone-input-wrapper:hover {
@@ -216,32 +217,131 @@
   box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.12);
 }
 
-.country-code-select {
+/* Custom Country Dropdown */
+.country-dropdown {
+  position: relative;
+}
+
+.country-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   background: rgba(30, 30, 30, 0.8);
   border: none;
   border-right: 1px solid rgba(196, 30, 58, 0.15);
-  padding: 0.6875rem 0.5rem 0.6875rem 0.75rem;
+  padding: 0.6875rem 0.625rem 0.6875rem 0.875rem;
   color: #ffffff;
   font-size: 0.9375rem;
   font-family: inherit;
   cursor: pointer;
-  min-width: 95px;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.5rem center;
-  padding-right: 1.5rem;
+  border-radius: 0.5rem 0 0 0.5rem;
+  transition: all 0.2s ease;
 }
 
-.country-code-select:focus {
-  outline: none;
-  background-color: rgba(40, 40, 40, 0.9);
+.country-dropdown-trigger:hover {
+  background: rgba(40, 40, 40, 0.9);
 }
 
-.country-code-select option {
+.flag-icon {
+  width: 24px;
+  height: 18px;
+  border-radius: 2px;
+  object-fit: cover;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.flag-icon-small {
+  width: 20px;
+  height: 15px;
+  border-radius: 2px;
+  object-fit: cover;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.dropdown-arrow {
+  color: #888;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.country-dropdown-trigger .country-code {
+  font-weight: 500;
+  min-width: 45px;
+  text-align: left;
+}
+
+.country-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 280px;
+  max-height: 320px;
+  overflow-y: auto;
   background: #1a1a1a;
+  border: 1px solid rgba(196, 30, 58, 0.3);
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 1000;
+  padding: 0.375rem;
+}
+
+.country-dropdown-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.country-dropdown-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.country-dropdown-menu::-webkit-scrollbar-thumb {
+  background: rgba(196, 30, 58, 0.3);
+  border-radius: 3px;
+}
+
+.country-dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(196, 30, 58, 0.5);
+}
+
+.country-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.375rem;
   color: #ffffff;
-  padding: 0.5rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.country-option:hover {
+  background: rgba(196, 30, 58, 0.15);
+}
+
+.country-option.selected {
+  background: rgba(196, 30, 58, 0.25);
+}
+
+.country-option .country-name {
+  flex: 1;
+  color: #e0e0e0;
+}
+
+.country-option .country-code {
+  color: #888;
+  font-size: 0.8125rem;
+  font-weight: 500;
 }
 
 .phone-input {
@@ -253,6 +353,7 @@
   font-size: 0.9375rem;
   font-family: inherit;
   line-height: 1.5;
+  min-width: 0;
 }
 
 .phone-input:focus {
@@ -261,6 +362,11 @@
 
 .phone-input::placeholder {
   color: #505050;
+}
+
+.phone-summary {
+  display: flex;
+  align-items: center;
 }
 
 /* Units Grid */

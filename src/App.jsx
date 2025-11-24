@@ -1,34 +1,107 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Stepper, { Step } from './components/Stepper';
 import './App.css';
 
 const countryCodes = [
-  { code: '+971', country: 'UAE', flag: '🇦🇪' },
-  { code: '+966', country: 'Saudi Arabia', flag: '🇸🇦' },
-  { code: '+974', country: 'Qatar', flag: '🇶🇦' },
-  { code: '+973', country: 'Bahrain', flag: '🇧🇭' },
-  { code: '+968', country: 'Oman', flag: '🇴🇲' },
-  { code: '+965', country: 'Kuwait', flag: '🇰🇼' },
-  { code: '+1', country: 'USA', flag: '🇺🇸' },
-  { code: '+44', country: 'UK', flag: '🇬🇧' },
-  { code: '+91', country: 'India', flag: '🇮🇳' },
-  { code: '+92', country: 'Pakistan', flag: '🇵🇰' },
-  { code: '+63', country: 'Philippines', flag: '🇵🇭' },
-  { code: '+20', country: 'Egypt', flag: '🇪🇬' },
-  { code: '+962', country: 'Jordan', flag: '🇯🇴' },
-  { code: '+961', country: 'Lebanon', flag: '🇱🇧' },
-  { code: '+33', country: 'France', flag: '🇫🇷' },
-  { code: '+49', country: 'Germany', flag: '🇩🇪' },
-  { code: '+39', country: 'Italy', flag: '🇮🇹' },
-  { code: '+7', country: 'Russia', flag: '🇷🇺' },
-  { code: '+86', country: 'China', flag: '🇨🇳' },
-  { code: '+81', country: 'Japan', flag: '🇯🇵' },
-  { code: '+82', country: 'South Korea', flag: '🇰🇷' },
-  { code: '+65', country: 'Singapore', flag: '🇸🇬' },
-  { code: '+61', country: 'Australia', flag: '🇦🇺' },
-  { code: '+27', country: 'South Africa', flag: '🇿🇦' },
-  { code: '+55', country: 'Brazil', flag: '🇧🇷' },
+  { code: '+971', country: 'UAE', iso: 'ae' },
+  { code: '+966', country: 'Saudi Arabia', iso: 'sa' },
+  { code: '+974', country: 'Qatar', iso: 'qa' },
+  { code: '+973', country: 'Bahrain', iso: 'bh' },
+  { code: '+968', country: 'Oman', iso: 'om' },
+  { code: '+965', country: 'Kuwait', iso: 'kw' },
+  { code: '+1', country: 'USA', iso: 'us' },
+  { code: '+44', country: 'UK', iso: 'gb' },
+  { code: '+91', country: 'India', iso: 'in' },
+  { code: '+92', country: 'Pakistan', iso: 'pk' },
+  { code: '+63', country: 'Philippines', iso: 'ph' },
+  { code: '+20', country: 'Egypt', iso: 'eg' },
+  { code: '+962', country: 'Jordan', iso: 'jo' },
+  { code: '+961', country: 'Lebanon', iso: 'lb' },
+  { code: '+33', country: 'France', iso: 'fr' },
+  { code: '+49', country: 'Germany', iso: 'de' },
+  { code: '+39', country: 'Italy', iso: 'it' },
+  { code: '+7', country: 'Russia', iso: 'ru' },
+  { code: '+86', country: 'China', iso: 'cn' },
+  { code: '+81', country: 'Japan', iso: 'jp' },
+  { code: '+82', country: 'South Korea', iso: 'kr' },
+  { code: '+65', country: 'Singapore', iso: 'sg' },
+  { code: '+61', country: 'Australia', iso: 'au' },
+  { code: '+27', country: 'South Africa', iso: 'za' },
+  { code: '+55', country: 'Brazil', iso: 'br' },
+  { code: '+34', country: 'Spain', iso: 'es' },
+  { code: '+31', country: 'Netherlands', iso: 'nl' },
+  { code: '+41', country: 'Switzerland', iso: 'ch' },
+  { code: '+90', country: 'Turkey', iso: 'tr' },
+  { code: '+60', country: 'Malaysia', iso: 'my' },
 ];
+
+const getFlagUrl = (iso) => `https://flagcdn.com/24x18/${iso}.png`;
+
+function CountryCodeSelect({ value, onChange }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const selected = countryCodes.find(c => c.code === value) || countryCodes[0];
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div className="country-dropdown" ref={dropdownRef}>
+      <button
+        type="button"
+        className="country-dropdown-trigger"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <img
+          src={getFlagUrl(selected.iso)}
+          alt={selected.country}
+          className="flag-icon"
+        />
+        <span className="country-code">{selected.code}</span>
+        <svg
+          className={`dropdown-arrow ${isOpen ? 'open' : ''}`}
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          fill="none"
+        >
+          <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className="country-dropdown-menu">
+          {countryCodes.map((country) => (
+            <button
+              key={country.code}
+              type="button"
+              className={`country-option ${country.code === value ? 'selected' : ''}`}
+              onClick={() => {
+                onChange(country.code);
+                setIsOpen(false);
+              }}
+            >
+              <img
+                src={getFlagUrl(country.iso)}
+                alt={country.country}
+                className="flag-icon"
+              />
+              <span className="country-name">{country.country}</span>
+              <span className="country-code">{country.code}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const units = [
   { id: 1, name: 'Dubai Marina 2BR', price: 'AED 2.5M', image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop&q=80' },
@@ -92,6 +165,8 @@ function App() {
       setIsSubmitting(false);
     }
   };
+
+  const selectedCountry = countryCodes.find(c => c.code === formData.countryCode);
 
   return (
     <div className="app">
@@ -188,17 +263,10 @@ function App() {
                   <div className="form-group">
                     <label htmlFor="phone">Phone Number</label>
                     <div className="phone-input-wrapper">
-                      <select
+                      <CountryCodeSelect
                         value={formData.countryCode}
-                        onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
-                        className="country-code-select"
-                      >
-                        {countryCodes.map((c) => (
-                          <option key={c.code} value={c.code}>
-                            {c.flag} {c.code}
-                          </option>
-                        ))}
-                      </select>
+                        onChange={(code) => setFormData({ ...formData, countryCode: code })}
+                      />
                       <input
                         id="phone"
                         type="tel"
@@ -280,8 +348,19 @@ function App() {
                     </div>
                     <div className="summary-item">
                       <span className="summary-label">Phone</span>
-                      <span className="summary-value">
-                        {formData.phone ? `${formData.countryCode} ${formData.phone}` : 'Not provided'}
+                      <span className="summary-value phone-summary">
+                        {formData.phone ? (
+                          <>
+                            {selectedCountry && (
+                              <img
+                                src={getFlagUrl(selectedCountry.iso)}
+                                alt={selectedCountry.country}
+                                className="flag-icon-small"
+                              />
+                            )}
+                            {formData.countryCode} {formData.phone}
+                          </>
+                        ) : 'Not provided'}
                       </span>
                     </div>
                     <div className="summary-item">
