@@ -2,6 +2,34 @@ import { useState } from 'react';
 import Stepper, { Step } from './components/Stepper';
 import './App.css';
 
+const countryCodes = [
+  { code: '+971', country: 'UAE', flag: '🇦🇪' },
+  { code: '+966', country: 'Saudi Arabia', flag: '🇸🇦' },
+  { code: '+974', country: 'Qatar', flag: '🇶🇦' },
+  { code: '+973', country: 'Bahrain', flag: '🇧🇭' },
+  { code: '+968', country: 'Oman', flag: '🇴🇲' },
+  { code: '+965', country: 'Kuwait', flag: '🇰🇼' },
+  { code: '+1', country: 'USA', flag: '🇺🇸' },
+  { code: '+44', country: 'UK', flag: '🇬🇧' },
+  { code: '+91', country: 'India', flag: '🇮🇳' },
+  { code: '+92', country: 'Pakistan', flag: '🇵🇰' },
+  { code: '+63', country: 'Philippines', flag: '🇵🇭' },
+  { code: '+20', country: 'Egypt', flag: '🇪🇬' },
+  { code: '+962', country: 'Jordan', flag: '🇯🇴' },
+  { code: '+961', country: 'Lebanon', flag: '🇱🇧' },
+  { code: '+33', country: 'France', flag: '🇫🇷' },
+  { code: '+49', country: 'Germany', flag: '🇩🇪' },
+  { code: '+39', country: 'Italy', flag: '🇮🇹' },
+  { code: '+7', country: 'Russia', flag: '🇷🇺' },
+  { code: '+86', country: 'China', flag: '🇨🇳' },
+  { code: '+81', country: 'Japan', flag: '🇯🇵' },
+  { code: '+82', country: 'South Korea', flag: '🇰🇷' },
+  { code: '+65', country: 'Singapore', flag: '🇸🇬' },
+  { code: '+61', country: 'Australia', flag: '🇦🇺' },
+  { code: '+27', country: 'South Africa', flag: '🇿🇦' },
+  { code: '+55', country: 'Brazil', flag: '🇧🇷' },
+];
+
 const units = [
   { id: 1, name: 'Dubai Marina 2BR', price: 'AED 2.5M', image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop&q=80' },
   { id: 2, name: 'Downtown Dubai 3BR Penthouse', price: 'AED 5.8M', image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&auto=format&fit=crop&q=80' },
@@ -15,6 +43,7 @@ function App() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    countryCode: '+971',
     phone: '',
     selectedUnit: null,
     budget: '',
@@ -32,7 +61,7 @@ function App() {
         FirstName: formData.name.split(' ')[0],
         LastName: formData.name.split(' ').slice(1).join(' ') || 'N/A',
         Email: formData.email,
-        Phone: formData.phone,
+        Phone: formData.phone ? `${formData.countryCode} ${formData.phone}` : '',
         Property_Interest__c: formData.selectedUnit?.name || 'Not specified',
         Budget__c: formData.budget,
         Description: formData.message,
@@ -158,14 +187,27 @@ function App() {
                   </div>
                   <div className="form-group">
                     <label htmlFor="phone">Phone Number</label>
-                    <input
-                      id="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="+971 50 123 4567"
-                      className="form-input"
-                    />
+                    <div className="phone-input-wrapper">
+                      <select
+                        value={formData.countryCode}
+                        onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
+                        className="country-code-select"
+                      >
+                        {countryCodes.map((c) => (
+                          <option key={c.code} value={c.code}>
+                            {c.flag} {c.code}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        id="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        placeholder="50 123 4567"
+                        className="phone-input"
+                      />
+                    </div>
                   </div>
                   <div className="form-group">
                     <label htmlFor="budget">Budget Range</label>
@@ -238,7 +280,9 @@ function App() {
                     </div>
                     <div className="summary-item">
                       <span className="summary-label">Phone</span>
-                      <span className="summary-value">{formData.phone || 'Not provided'}</span>
+                      <span className="summary-value">
+                        {formData.phone ? `${formData.countryCode} ${formData.phone}` : 'Not provided'}
+                      </span>
                     </div>
                     <div className="summary-item">
                       <span className="summary-label">Budget</span>
